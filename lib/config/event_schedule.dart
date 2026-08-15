@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart' show kDebugMode;
-
 /// -----------------------------------------------------------------------
 /// EDIT THIS: set kEventStartDate to the actual Tuesday your event begins.
 /// Everything else (Day 1-5, session windows per weekday) is computed
@@ -10,20 +8,23 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 /// -----------------------------------------------------------------------
 final DateTime kEventStartDate = DateTime(2026, 8, 18); // <-- SET YOUR REAL TUESDAY DATE HERE
 
-// Fails fast in debug mode if kEventStartDate isn't actually a Tuesday,
-// instead of silently producing a scrambled schedule.
+// Fails fast if kEventStartDate isn't actually a Tuesday, instead of
+// silently producing a scrambled schedule.
 final _kEventStartDateCheck = () {
   assert(
     kEventStartDate.weekday == DateTime.tuesday,
     'kEventStartDate must fall on a Tuesday — got ${_weekdayNames[kEventStartDate.weekday - 1]}',
   );
   return true;
+  
 }();
 
 // TESTING ONLY: when true, currentActiveSession() always returns a fake
-// active session instead of checking the real date/time. Only takes effect
-// in debug builds (kDebugMode) — flip to false, or just leave it, since it
-// can never accidentally go live in a release build.
+// active session instead of checking the real date/time — regardless of
+// build mode (debug, profile, or release/APK).
+//
+// *** MUST be set back to false before shipping the real build, or the
+// app will always report a fake active session in production. ***
 const bool kForceActiveSessionForTesting = true;
 
 // Time windows for each named session - edit if your actual hours differ.
@@ -109,7 +110,7 @@ class ActiveSession {
 }
 
 ActiveSession? currentActiveSession([DateTime? now]) {
-  if (kDebugMode && kForceActiveSessionForTesting) {
+  if (kForceActiveSessionForTesting) {
     return ActiveSession(dayNumber: 1, date: DateTime.now(), sessionName: 'Morning');
   }
 
