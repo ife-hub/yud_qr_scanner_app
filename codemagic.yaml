@@ -1,20 +1,22 @@
 workflows:
-  ios-unsigned:
-    name: iOS Unsigned Build
+  ios-ad-hoc:
+    name: iOS Ad Hoc Build
     max_build_duration: 60
     instance_type: mac_mini_m2
+
     environment:
       flutter: stable
+      ios_signing:
+        distribution_type: ad_hoc
+        bundle_identifier: com.example.qrScannerApp
+
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
-      - name: Build unsigned iOS app
-        script: flutter build ios --release --no-codesign
-      - name: Package into unsigned IPA
+
+      - name: Build iOS IPA
         script: |
-          mkdir -p Payload
-          cp -r build/ios/iphoneos/Runner.app Payload/
-          zip -r app-unsigned.ipa Payload
+          flutter build ipa --release
+
     artifacts:
-      - app-unsigned.ipa
-      - build/ios/iphoneos/*.app
+      - build/ios/ipa/*.ipa
